@@ -292,6 +292,8 @@ void mtk_imgsys_pipe_job_finish(struct mtk_imgsys_request *req,
 		i = MTK_IMGSYS_VIDEO_NODE_CTRLMETA_OUT;
 
 	in_buf = req->buf_map[i];
+	req_track->mainflow_from = REQUEST_DONE_FROM_KERNEL_TO_IMGSTREAM;
+	req_track->subflow_kernel++;
 
 	for (i = 0; i < pipe->desc->total_queues; i++) {
 		struct mtk_imgsys_dev_buffer *dev_buf = req->buf_map[i];
@@ -325,8 +327,6 @@ done:
 #ifdef REQ_TIMESTAMP
 	req->tstate.time_notify2vb2done = ktime_get_boottime_ns()/1000;
 #endif
-    req_track->mainflow_from = REQUEST_DONE_FROM_KERNEL_TO_IMGSTREAM;
-    req_track->subflow_kernel++;
 	complete(&req->done);
         if (imgsys_dbg_enable()) {
 		dev_dbg(pipe->imgsys_dev->dev,
